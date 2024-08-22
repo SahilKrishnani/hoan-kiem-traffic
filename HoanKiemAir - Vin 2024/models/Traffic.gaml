@@ -10,9 +10,12 @@ model traffic
 global {
 	string CAR <- "car";
 	string MOTO <- "motorbike";
+	string BICYCLE <- "bicycle";
+	string CYCLO <- "cyclo";
+	string BUS <- "bus";
 	string OUT <- "outArea";	
 	graph road_network;
-	float lane_width <- 1.0;
+	float lane_width <- 0.1;
 }
 
 
@@ -33,7 +36,6 @@ species road  skills: [road_skill]{
 	}
 }
 
-
 species car parent: vehicle {
 	float vehicle_length <- 4.5 #m;
 	int num_lanes_occupied <-2;
@@ -47,11 +49,33 @@ species motorbike parent: vehicle {
 	float max_speed <-rnd(40,50) #km / #h;
 }
 
+species bicycle parent: vehicle {
+	float vehicle_length <- 1.8; 
+	int num_lanes_occupied <- 1;
+	float max_speed <-rnd(15,25) #km / #h;
+}
+
+species cyclo parent: vehicle {
+	float vehicle_length <- 3.0; 
+	int num_lanes_occupied <- 1;
+	float max_speed <-rnd(10,20) #km / #h;
+}
+
+species bus parent: vehicle {
+	float vehicle_length <- 10.0; 
+	int num_lanes_occupied <- 3;
+	float max_speed <-rnd(30,50) #km / #h;
+	
+	}
+
 species vehicle skills:[driving] {
 	string type;
 	building target;
 	point shift_pt <- location ;	
 	bool at_home <- true;
+	
+	bool is_ev<-false;
+	
 	init {
 		
 		proba_respect_priorities <- 0.0;
@@ -96,7 +120,7 @@ species vehicle skills:[driving] {
 				dist <- -dist;
 			}
 		 	
-			return location + {cos(heading + 90) * dist, sin(heading + 90) * dist};
+			return location + {cos(heading + 90) * dist/10, sin(heading + 90) * dist/10};
 		} else {
 			return {0, 0};
 		}
